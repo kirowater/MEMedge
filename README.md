@@ -1,1 +1,1 @@
-MEMedge is designed to be good resource to learn from
+MEMedge is designed to be resource to learn from
