@@ -10,7 +10,6 @@ __declspec(naked) void GetEngineBaseHook() {
 		mov engine_base, eax
 		jmp GetEngineBaseOriginal
 	}
-	//implement here func() // which returns to value; engine_base = engine_base;
 }
 
 pseudcode:
