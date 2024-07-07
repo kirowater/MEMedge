@@ -79,7 +79,7 @@ sub_11C6A70+27   0E4 64 A3 00 00 00 00                                          
 sub_11C6A70+2D   0E4 8B E9                                                           mov     ebp, ecx
 sub_11C6A70+2F   0E4 89 6C 24 30                                                     mov     [esp+0E4h+var_B4], ebp
 
-// player
+// player ( support's Origin version )
 
 pattern & mask:
 "\x0F\xB6\x51\x68\x81", "xxxxx" - 36 // there's no return so -36 is present which goes to "F3"
@@ -102,3 +102,27 @@ sub_12B0960+28   010 81 A1 1C 04 00 00 FF FF FE FF                              
 sub_12B0960+32   010 83 FA 0D                                                        cmp     edx, 0Dh        ; switch 14 cases
 sub_12B0960+35   010 0F 87 F5 00 00 00                                               ja      def_12B099B     ; jumptable 012B099B default case, cases 5,6,11
 sub_12B0960+3B   010 FF 24 95 DC 0A 2B 01                                            jmp     ds:jpt_12B099B[edx*4] ; switch jump
+
+// player ( support's Steam version only )
+
+pattern & mask:
+"\x89\x0D\x00\x00\x00\x00\xB9\x00\x00\x00\x00\xFF", "xx????x????x"
+
+c++ code:
+DWORD addr;
+MODULEENTRY32 mod = GetModuleInfoByName(GetCurrentProcessId(), L"mirrorsedge.exe");
+addr = (DWORD)FindPattern(mod.modBaseAddr, mod.modBaseSize, "\x89\x0D\x00\x00\x00\x00\xB9\x00\x00\x00\x00\xFF", "xx????x????x");
+addr = *(DWORD *)(addr + 0x2);
+addr = 0x12B5690;
+TrampolineHook(UpdatePlayerHook, (void *)addr, (void **)&PlayerHandlerOriginal);
+
+pseudocode:
+int __thiscall sub_1198580(void *this)
+dword_1F73F1C = (int)this;
+
+assembly:
+sub_1198580      000 A1 20 3F F7 01                                                  mov     eax, off_1F73F20
+sub_1198580+5    000 8B 10                                                           mov     edx, [eax]
+sub_1198580+7    000 89 0D 1C 3F F7 01                                               mov     dword_1F73F1C, ecx
+sub_1198580+D    000 B9 20 3F F7 01                                                  mov     ecx, offset off_1F73F20
+sub_1198580+12   000 FF E2                                                           jmp     edx             ; Indirect Near Jump
