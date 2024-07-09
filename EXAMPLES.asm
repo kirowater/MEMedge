@@ -3,7 +3,7 @@
 pattern & mask:
 "\x8B\x01\xF3\x0F\x10\x98\x98\x00\x00\x00", "xxxxxxxxxx"
 
-c++ code:
+c++ code: // captures the base address of the engine object by moving the value pointed to by ecx into the global engine_base variable then jumps to the original function
 __declspec(naked) void GetEngineBaseHook() {
 	__asm {
 		mov eax, [ecx]
@@ -82,7 +82,7 @@ sub_11C6A70+2F   0E4 89 6C 24 30                                                
 // player ( support's Origin version )
 
 pattern & mask:
-"\x0F\xB6\x51\x68\x81", "xxxxx" - 36 // there's no return so -36 is present which goes to "F3"
+"\x0F\xB6\x51\x68\x81", "xxxxx" - 36 // adding - 36 will move to [F3]
 
 pseudocode:
 void __thiscall sub_12B5690(int *this, int a2, _DWORD *a3)
@@ -111,8 +111,7 @@ pattern & mask:
 c++ code:
 DWORD addr;
 MODULEENTRY32 mod = GetModuleInfoByName(GetCurrentProcessId(), L"mirrorsedge.exe");
-addr = (DWORD)FindPattern(mod.modBaseAddr, mod.modBaseSize, "\x89\x0D\x00\x00\x00\x00\xB9\x00\x00\x00\x00\xFF", "xx????x????x");
-addr = *(DWORD *)(addr + 0x2);
+addr = (DWORD)FindPattern(mod.modBaseAddr, mod.modBaseSize, "\x89\x0D\x00\x00\x00\x00\xB9\x00\x00\x00\x00\xFF", "xx????x????x") + 0x2; // adding + 0x2 will move to: [1C 3F F7 01], address part of mov dword_1F73F1C, ecx. Specifically, it targets the address 1F73F1C.
 addr = 0x12B5690;
 TrampolineHook(UpdatePlayerHook, (void *)addr, (void **)&PlayerHandlerOriginal);
 
