@@ -3,7 +3,7 @@
 pattern & mask:
 "\x8B\x01\xF3\x0F\x10\x98\x98\x00\x00\x00", "xxxxxxxxxx"
 
-c++ code: // captures the base address of the engine object by moving the value pointed to by ecx into the global engine_base variable then jumps to the original function
+c++ code: // captures the base address of the engine base by moving the value pointed to by ecx into the global engine_base variable then jumps to the original function
 __declspec(naked) void GetEngineBaseHook() {
 	__asm {
 		mov eax, [ecx]
